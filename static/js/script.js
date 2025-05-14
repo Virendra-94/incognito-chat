@@ -1,8 +1,9 @@
-let $ = jQuery;
-let socket;
-
 function initializeWebSocket() {
-  socket = new WebSocket('ws://localhost:8000/message');
+  const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+  const host = window.location.host;
+  const socketUrl = `${protocol}://${host}/message`;
+
+  socket = new WebSocket(socketUrl);
 
   socket.onopen = function () {
     console.log('✅ WebSocket connection established.');
@@ -38,45 +39,85 @@ function initializeWebSocket() {
   };
 }
 
-function showJoinModal() {
-  $('#username-form').show();
-  $('#chat').hide();
-  $('#message-input').hide();
-  $('#usernameModal').modal('show');
-}
+// let $ = jQuery;
+// let socket;
 
-function joinChat() {
-  $('#username-form').hide();
-  $('#chat').show();
-  $('#message-input').show();
-  $('#usernameModal').modal('hide');
-}
+// function initializeWebSocket() {
+//   socket = new WebSocket('ws://localhost:8000/message');
 
-function sendMessage() {
-  const message = $('#message').val();
-  const username = $('#usernameInput').val();
+//   socket.onopen = function () {
+//     console.log('✅ WebSocket connection established.');
+//   };
 
-  if (message && username && socket.readyState === WebSocket.OPEN) {
-    socket.send(JSON.stringify({
-      message: message,
-      username: username
-    }));
-    $('#message').val('');
-  }
-}
+//   socket.onmessage = function (event) {
+//     const data = JSON.parse(event.data);
+//     const msgClass = data.isMe ? 'user-message' : 'other-message';
+//     const sender = data.isMe ? 'You' : data.username;
+//     const message = data.data;
 
-// Event Listeners
-$('#open-modal').click(() => showJoinModal());
+//     const messageElement = $('<li>').addClass('clearfix');
+//     messageElement.append(
+//       $('<div>').addClass(msgClass).text(`${sender}: ${message}`)
+//     );
 
-$('#join').click(() => {
-  initializeWebSocket();
-  joinChat();
-});
+//     $('#messages').append(messageElement);
+//     $('#chat').scrollTop($('#chat')[0].scrollHeight);
+//   };
 
-$('#send').click(() => sendMessage());
+//   socket.onerror = function () {
+//     console.error('❌ WebSocket error. Please rejoin the chat.');
+//     showJoinModal();
+//   };
 
-$('#message').keydown(event => {
-  if (event.key === 'Enter') {
-    sendMessage();
-  }
-});
+//   socket.onclose = function (event) {
+//     if (event.code === 1000) {
+//       console.log('✅ WebSocket closed normally.');
+//     } else {
+//       console.error(`❌ WebSocket closed with code: ${event.code}. Please rejoin.`);
+//       showJoinModal();
+//     }
+//   };
+// }
+
+// function showJoinModal() {
+//   $('#username-form').show();
+//   $('#chat').hide();
+//   $('#message-input').hide();
+//   $('#usernameModal').modal('show');
+// }
+
+// function joinChat() {
+//   $('#username-form').hide();
+//   $('#chat').show();
+//   $('#message-input').show();
+//   $('#usernameModal').modal('hide');
+// }
+
+// function sendMessage() {
+//   const message = $('#message').val();
+//   const username = $('#usernameInput').val();
+
+//   if (message && username && socket.readyState === WebSocket.OPEN) {
+//     socket.send(JSON.stringify({
+//       message: message,
+//       username: username
+//     }));
+//     $('#message').val('');
+//   }
+// }
+
+// // Event Listeners
+// $('#open-modal').click(() => showJoinModal());
+
+// $('#join').click(() => {
+//   initializeWebSocket();
+//   joinChat();
+// });
+
+// $('#send').click(() => sendMessage());
+
+// $('#message').keydown(event => {
+//   if (event.key === 'Enter') {
+//     sendMessage();
+//   }
+// });
