@@ -1,3 +1,5 @@
+let socket;
+
 function initializeWebSocket() {
   const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
   const host = window.location.host;
@@ -38,6 +40,50 @@ function initializeWebSocket() {
     }
   };
 }
+
+function showJoinModal() {
+  $('#username-form').show();
+  $('#chat').hide();
+  $('#message-input').hide();
+  $('#usernameModal').modal('show');
+}
+
+function joinChat() {
+  $('#username-form').hide();
+  $('#chat').show();
+  $('#message-input').show();
+  $('#usernameModal').modal('hide');
+}
+
+function sendMessage() {
+  const message = $('#message').val();
+  const username = $('#usernameInput').val();
+
+  if (message && username && socket.readyState === WebSocket.OPEN) {
+    socket.send(JSON.stringify({
+      message: message,
+      username: username
+    }));
+    $('#message').val('');
+  }
+}
+
+// ✅ Event Listeners
+$('#open-modal').click(() => showJoinModal());
+
+$('#join').click(() => {
+  initializeWebSocket();
+  joinChat();
+});
+
+$('#send').click(() => sendMessage());
+
+$('#message').keydown(event => {
+  if (event.key === 'Enter') {
+    sendMessage();
+  }
+});
+
 
 // let $ = jQuery;
 // let socket;
